@@ -1,0 +1,70 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book API Client</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Book API Client</h1>
+
+    <!-- Display all books -->
+    <h2>Get All Books</h2>
+    <button onclick="getAllBooks()">Get All Books</button>
+    <pre id="allBooksResult"></pre>
+
+    <!-- Form to get a specific book -->
+    <h2>Get Book by ID</h2>
+    <form onsubmit="getBookById(); return false;">
+        <label for="bookId">Book ID:</label>
+        <input type="number" id="bookId" required>
+        <button type="submit">Get Book</button>
+    </form>
+    <pre id="singleBookResult"></pre>
+
+    <!-- Form to create a new book -->
+    <h2>Create New Book</h2>
+    <form onsubmit="createBook(); return false;">
+        <label for="newTitle">Title:</label>
+        <input type="text" id="newTitle" required>
+        <label for="newAuthor">Author:</label>
+        <input type="text" id="newAuthor" required>
+        <button type="submit">Create Book</button>
+    </form>
+    <pre id="createBookResult"></pre>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function getAllBooks() {
+            $.get('/api/books', function (data) {
+                $('#allBooksResult').text(JSON.stringify(data, null, 2));
+            });
+        }
+
+        function getBookById() {
+            const bookId = $('#bookId').val();
+            $.get(`/api/books/${bookId}`, function (data) {
+                $('#singleBookResult').text(JSON.stringify(data, null, 2));
+            });
+        }
+
+        function createBook() {
+            const newTitle = $('#newTitle').val();
+            const newAuthor = $('#newAuthor').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/books',
+                contentType: 'application/json',
+                data: JSON.stringify({ title: newTitle, author: newAuthor }),
+                success: function (data) {
+                    $('#createBookResult').text(JSON.stringify(data, null, 2));
+                }
+            });
+        }
+    </script>
+</body>
+</html>
